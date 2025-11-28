@@ -210,7 +210,7 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	// Override the key-value pair and insert
 	m_mPreferencesMaps[iSlot][iKeyHash] = prefValue;
 
-	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
+	// ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
 
 	// char szPath[MAX_PATH];
 	// V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.txt");
