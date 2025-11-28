@@ -31,7 +31,7 @@
 
 using json = nlohmann::json;
 
-KeyValues* g_hKVData = new KeyValues("Data");
+KeyValues* g_hKVData = new KeyValues("Prefs");
 
 CUserPreferencesStorage* g_pUserPreferencesStorage = nullptr;
 CUserPreferencesSystem* g_pUserPreferencesSystem = nullptr;
@@ -216,7 +216,7 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
 
 	//std::to_string(player->GetSteamId64()).c_str()   g_hKVData
-	KeyValues *pKV = g_hKVData->FindKey("Data");
+	KeyValues *pKV = g_hKVData->FindKey("Data", true);
 	if(pKV)
 	{
 		KeyValues *hData = pKV->FindKey("test", true);
