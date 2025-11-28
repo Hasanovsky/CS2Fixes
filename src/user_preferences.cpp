@@ -213,10 +213,12 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	char szPath[MAX_PATH];
 	V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.ini");
 
+	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
+
 	KeyValues* pKVNew = new KeyValues("Data");
 	if(pKVNew)
 	{
-		KeyValues *hData = pKVNew->FindKey(std::to_string(g_playerManager->GetPlayer(CPlayerSlot(iSlot))).c_str(), true);
+		KeyValues *hData = g_hKVData->FindKey(std::to_string(player->GetSteamId64()).c_str(), true);
 	    if (hData)
 		{
 			hData->SetString(sKey, sValue);
