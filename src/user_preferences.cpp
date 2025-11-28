@@ -24,6 +24,7 @@
 #include "httpmanager.h"
 #include "playermanager.h"
 #include "strtools.h"
+#include "KeyValues.h"
 #include <string>
 #undef snprintf
 #include "vendor/nlohmann/json.hpp"
@@ -206,6 +207,22 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 
 	// Override the key-value pair and insert
 	m_mPreferencesMaps[iSlot][iKeyHash] = prefValue;
+
+	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
+	if (!player || !player->IsAuthenticated()) return false;
+	if (iSteamId != player->GetSteamId64())
+		return false;
+
+	char szPath[MAX_PATH];
+	V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/user_preferences/user_preferences.txt");
+
+	KeyValues *hData = g_hKVData->FindKey(std::to_string(iSteamId).c_str(), true);
+    if (!hData) return false;
+
+	hData->SetString(sKey, sValue);
+
+	if (!hData->SaveToFile(g_pFullFileSystem, szPath))
+		Warning("Failed to save infractions to %s\n", szPath);
 }
 
 void CUserPreferencesSystem::SetPreferenceInt(int iSlot, const char* sKey, int iValue)
