@@ -210,14 +210,13 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	// Override the key-value pair and insert
 	m_mPreferencesMaps[iSlot][iKeyHash] = prefValue;
 
-	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
-
 	char szPath[MAX_PATH];
 	V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.ini");
 
-	if(g_hKVData)
+	KeyValues* pKVNew = new KeyValues("Data");
+	if(pKVNew)
 	{
-		KeyValues *hData = g_hKVData->FindKey("test", true);
+		KeyValues *hData = pKVNew->FindKey(std::to_string(g_playerManager->GetPlayer(CPlayerSlot(iSlot))).c_str(), true);
 	    if (hData)
 		{
 			hData->SetString(sKey, sValue);
