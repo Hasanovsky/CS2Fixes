@@ -215,8 +215,8 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 
 	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
 
-	KeyValues* pKV = new KeyValues("Data");
-	//std::to_string(player->GetSteamId64()).c_str()
+	//std::to_string(player->GetSteamId64()).c_str()   g_hKVData
+	KeyValues *pKV = g_hKVData->FindKey("Data");
 	if(pKV)
 	{
 		KeyValues *hData = pKV->FindKey("test", true);
