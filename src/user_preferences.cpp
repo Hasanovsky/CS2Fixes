@@ -220,7 +220,7 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	{
 		// hData->SetString(sKey, sValue);
 
-		hData->SaveToFile(g_pFullFileSystem, szPath);
+		// hData->SaveToFile(g_pFullFileSystem, szPath);
 	}
 }
 
