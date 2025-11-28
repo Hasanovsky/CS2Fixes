@@ -215,18 +215,21 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 
 	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
 
-	//std::to_string(player->GetSteamId64()).c_str()   g_hKVData
 	KeyValues *pKV = g_hKVData->FindKey("Data", true);
-	if(pKV)
+	if (!pKV)
 	{
-		KeyValues *hData = pKV->FindKey("test", true);
-	    if (hData)
-		{
-			hData->SetString(sKey, sValue);
-	
-			hData->SaveToFile(g_pFullFileSystem, szPath);
-		}
+	    pKV = g_hKVData->CreateKey("Data");
 	}
+	
+	KeyValues *hData = pKV->FindKey("test", true);
+	if (!hData)
+	{
+	    hData = pKV->CreateKey("test"); 
+	}
+	
+	hData->SetString(sKey, sValue);
+
+	hData->SaveToFile(g_pFullFileSystem, szPath);
 }
 
 void CUserPreferencesSystem::SetPreferenceInt(int iSlot, const char* sKey, int iValue)
