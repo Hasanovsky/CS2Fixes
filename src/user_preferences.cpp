@@ -210,19 +210,19 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	// Override the key-value pair and insert
 	m_mPreferencesMaps[iSlot][iKeyHash] = prefValue;
 
-	// ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
+	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
 
-	// char szPath[MAX_PATH];
-	// V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.txt");
+	char szPath[MAX_PATH];
+	V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.ini");
 
-	// KeyValues *hData = g_hKVData->FindKey(std::to_string(player->GetSteamId64()).c_str(), true);
- //    if (hData)
-	// {
-	// 	hData->SetString(sKey, sValue);
+	KeyValues *hData = g_hKVData->FindKey(std::to_string(player->GetSteamId64()).c_str(), true);
+    if (hData)
+	{
+		hData->SetString(sKey, sValue);
 
-	// 	if (!hData->SaveToFile(g_pFullFileSystem, szPath))
-	// 		Warning("Failed to save infractions to %s\n", szPath);
-	// }
+		if (!hData->SaveToFile(g_pFullFileSystem, szPath))
+			Warning("Failed to save infractions to %s\n", szPath);
+	}
 }
 
 void CUserPreferencesSystem::SetPreferenceInt(int iSlot, const char* sKey, int iValue)
