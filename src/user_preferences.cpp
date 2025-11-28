@@ -222,7 +222,7 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 
 	// 	if (!hData->SaveToFile(g_pFullFileSystem, szPath))
 	// 		Warning("Failed to save infractions to %s\n", szPath);
-	}
+	// }
 }
 
 void CUserPreferencesSystem::SetPreferenceInt(int iSlot, const char* sKey, int iValue)
