@@ -31,7 +31,7 @@
 
 using json = nlohmann::json;
 
-KeyValues* g_hKVData;
+KeyValues* g_hKVData = new KeyValues("Data");
 
 CUserPreferencesStorage* g_pUserPreferencesStorage = nullptr;
 CUserPreferencesSystem* g_pUserPreferencesSystem = nullptr;
@@ -215,12 +215,15 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	char szPath[MAX_PATH];
 	V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.ini");
 
-	KeyValues *hData = g_hKVData->FindKey("test", true);
-    if (hData)
+	if(g_hKVData)
 	{
-		// hData->SetString(sKey, sValue);
-
-		// hData->SaveToFile(g_pFullFileSystem, szPath);
+		KeyValues *hData = g_hKVData->FindKey("test", true);
+	    if (hData)
+		{
+			hData->SetString(sKey, sValue);
+	
+			hData->SaveToFile(g_pFullFileSystem, szPath);
+		}
 	}
 }
 
