@@ -814,26 +814,42 @@ void CMapVoteSystem::PrintMapList(CCSPlayerController* pController)
 		return V_strcasecmp(right->GetName(), left->GetName()) > 0;
 	});
 
-	ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "The list of all maps will be shown in console.");
-	ClientPrint(pController, HUD_PRINTCONSOLE, "The list of all maps is:");
+	// ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "The list of all maps will be shown in console.");
+	// ClientPrint(pController, HUD_PRINTCONSOLE, "The list of all maps is:");
+
+	int iSlot = pController->GetPlayerSlot();
+	Menu hMenu;
+	g_pMenus->SetTitleMenu(hMenu, "Nominate");
 
 	for (auto pMap : vecSortedMaps)
 	{
 		const char* name = pMap->GetName();
-		int minPlayers = pMap->GetMinPlayers();
-		int maxPlayers = pMap->GetMaxPlayers();
+		// int minPlayers = pMap->GetMinPlayers();
+		// int maxPlayers = pMap->GetMaxPlayers();
 
 		if (*pMap == *GetCurrentMap())
-			ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - Current Map", name);
-		else if (pMap->GetCooldown()->IsOnCooldown())
-			ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - Cooldown: %s", name, pMap->GetCooldownText(true).c_str());
-		else if (iPlayerCount < minPlayers)
-			ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - +%d Players", name, minPlayers - iPlayerCount);
-		else if (iPlayerCount > maxPlayers)
-			ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - -%d Players", name, iPlayerCount - maxPlayers);
+			g_pMenus->AddItemMenu(hMenu, name, name, ITEM_DISABLED);
 		else
-			ClientPrint(pController, HUD_PRINTCONSOLE, "- %s", name);
+			g_pMenus->AddItemMenu(hMenu, name, name);
+		// else if (pMap->GetCooldown()->IsOnCooldown())
+		// 	ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - Cooldown: %s", name, pMap->GetCooldownText(true).c_str());
+		// else if (iPlayerCount < minPlayers)
+		// 	ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - +%d Players", name, minPlayers - iPlayerCount);
+		// else if (iPlayerCount > maxPlayers)
+		// 	ClientPrint(pController, HUD_PRINTCONSOLE, "- %s - -%d Players", name, iPlayerCount - maxPlayers);
+		// else
+		// 	ClientPrint(pController, HUD_PRINTCONSOLE, "- %s", name);
 	}
+	
+	g_pMenus->SetExitMenu(hMenu, true);
+	g_pMenus->SetCallback(hMenu, [](const char* szBack, const char* szFront, int iItem, int iSlot)
+	{
+		if(iItem < 7)
+		{
+			ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "test map menu.");
+		}
+	});
+	g_pMenus->DisplayPlayerMenu(hMenu, iSlot, true, true);
 }
 
 void CMapVoteSystem::ForceNextMap(CCSPlayerController* pController, const char* pszMapSubstring)
