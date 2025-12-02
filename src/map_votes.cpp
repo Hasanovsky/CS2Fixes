@@ -855,7 +855,7 @@ void CMapVoteSystem::PrintMapList(CCSPlayerController* pController)
 			}
 		}
 	});
-	g_pMenus->DisplayPlayerMenu(hMenu, iSlot, true, true);
+	g_pMenus->DisplayPlayerMenu(hMenu, iSlot, true, false);
 }
 
 void CMapVoteSystem::ForceNextMap(CCSPlayerController* pController, const char* pszMapSubstring)
