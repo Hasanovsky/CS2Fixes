@@ -210,26 +210,26 @@ void CUserPreferencesSystem::SetPreference(int iSlot, const char* sKey, const ch
 	// Override the key-value pair and insert
 	m_mPreferencesMaps[iSlot][iKeyHash] = prefValue;
 
-	char szPath[MAX_PATH];
-	V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.ini");
+	// char szPath[MAX_PATH];
+	// V_snprintf(szPath, sizeof(szPath), "%s%s", Plat_GetGameDirectory(), "/csgo/addons/cs2fixes/data/user_preferences/user_preferences.ini");
 
-	ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
+	// ZEPlayer* player = g_playerManager->GetPlayer(CPlayerSlot(iSlot));
 
-	KeyValues *pKV = g_hKVData->FindKey("Data", true);
-	if (!pKV)
-	{
-	    pKV = g_hKVData->CreateKey("Data");
-	}
+	// KeyValues *pKV = g_hKVData->FindKey("Data", true);
+	// if (!pKV)
+	// {
+	//     pKV = g_hKVData->CreateKey("Data");
+	// }
 	
-	KeyValues *hData = pKV->FindKey("test", true);
-	if (!hData)
-	{
-	    hData = pKV->CreateKey("test"); 
-	}
+	// KeyValues *hData = pKV->FindKey("test", true);
+	// if (!hData)
+	// {
+	//     hData = pKV->CreateKey("test"); 
+	// }
 	
-	hData->SetString(sKey, sValue);
+	// hData->SetString(sKey, sValue);
 
-	hData->SaveToFile(g_pFullFileSystem, szPath);
+	// hData->SaveToFile(g_pFullFileSystem, szPath);
 }
 
 void CUserPreferencesSystem::SetPreferenceInt(int iSlot, const char* sKey, int iValue)
