@@ -59,6 +59,7 @@
 #include "usermessages.pb.h"
 #include "votemanager.h"
 #include "zombiereborn.h"
+#include "menus.h"
 #include <entity.h>
 
 #include "tier0/memdbgon.h"
