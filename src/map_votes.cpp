@@ -851,7 +851,7 @@ void CMapVoteSystem::PrintMapList(CCSPlayerController* pController)
 			if (pPlayer)
 			{
 				// ClientPrint(pPlayer, HUD_PRINTTALK, CHAT_PREFIX "test map menu.");
-				g_pMapVoteSystem->AttemptNomination(player, szBack);
+				g_pMapVoteSystem->AttemptNomination(pPlayer, szBack);
 			}
 		}
 	});
