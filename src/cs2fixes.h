@@ -30,6 +30,7 @@
 #include <iplayerinfo.h>
 #include <iserver.h>
 #include <sh_vector.h>
+#include "menus.h"
 
 #ifdef AMBUILD
 	#include "version_gen.h"
