@@ -847,7 +847,11 @@ void CMapVoteSystem::PrintMapList(CCSPlayerController* pController)
 	{
 		if(iItem < 7)
 		{
-			ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "test map menu.");
+			CCSPlayerController* pPlayer = CCSPlayerController::FromSlot(iSlot);
+			if (pPlayer)
+			{
+				ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "test map menu.");
+			}
 		}
 	});
 	g_pMenus->DisplayPlayerMenu(hMenu, iSlot, true, true);
