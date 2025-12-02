@@ -64,10 +64,6 @@
 
 #include "tier0/memdbgon.h"
 
-IUtilsApi* g_pUtils;
-IPlayersApi* g_pPlayers;
-IMenusApi* g_pMenus;
-
 void Message(const char* msg, ...)
 {
 	va_list args;
