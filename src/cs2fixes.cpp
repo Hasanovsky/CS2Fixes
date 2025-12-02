@@ -63,6 +63,10 @@
 
 #include "tier0/memdbgon.h"
 
+IUtilsApi* g_pUtils;
+IPlayersApi* g_pPlayers;
+IMenusApi* g_pMenus;
+
 void Message(const char* msg, ...)
 {
 	va_list args;
@@ -830,6 +834,36 @@ void CS2Fixes::AllPluginsLoaded()
 	 */
 
 	Message("AllPluginsLoaded\n");
+
+	char error[64];
+	int ret;
+	g_pUtils = (IUtilsApi *)g_SMAPI->MetaFactory(Utils_INTERFACE, &ret, NULL);
+	if (ret == META_IFACE_FAILED)
+	{
+		g_SMAPI->Format(error, sizeof(error), "Missing Utils system plugin");
+		ConColorMsg(Color(255, 0, 0, 255), "[%s] %s\n", GetLogTag(), error);
+		std::string sBuffer = "meta unload "+std::to_string(g_PLID);
+		engine->ServerCommand(sBuffer.c_str());
+		return;
+	}
+	g_pPlayers = (IPlayersApi *)g_SMAPI->MetaFactory(PLAYERS_INTERFACE, &ret, NULL);
+	if (ret == META_IFACE_FAILED)
+	{
+		g_pUtils->ErrorLog("[%s] Missing Players system plugin", g_PLAPI->GetLogTag());
+		std::string sBuffer = "meta unload "+std::to_string(g_PLID);
+		engine->ServerCommand(sBuffer.c_str());
+		return;
+	}
+	g_pMenus = (IMenusApi*)g_SMAPI->MetaFactory(Menus_INTERFACE, &ret, NULL);
+	if (ret == META_IFACE_FAILED)
+	{
+		char error[64];
+		g_SMAPI->Format(error, sizeof(error), "Failed to lookup menus api. Aborting");
+		ConColorMsg(Color(255, 0, 0, 255), "[%s] %s\n", GetLogTag(), error);
+		std::string sBuffer = "meta unload "+std::to_string(g_PLID);
+		engine->ServerCommand(sBuffer.c_str());
+		return;
+	}
 }
 
 CUtlVector<CServerSideClient*>* GetClientList()
