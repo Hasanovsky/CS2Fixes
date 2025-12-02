@@ -43,6 +43,9 @@ struct TouchLinked_t;
 class CCSPlayer_WeaponServices;
 class CBasePlayerWeapon;
 
+extern IUtilsApi* g_pUtils;
+extern IPlayersApi* g_pPlayers;
+extern IMenusApi* g_pMenus;
 extern IGameEventSystem* g_gameEventSystem;
 extern IGameEventManager2* g_gameEventManager;
 extern CGameEntitySystem* g_pEntitySystem;
