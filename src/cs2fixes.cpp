@@ -123,6 +123,9 @@ SH_DECL_MANUALHOOK3_void(DropWeapon, 0, 0, 0, CBasePlayerWeapon*, Vector*, Vecto
 SH_DECL_HOOK1_void(IServer, SetGameSpawnGroupMgr, SH_NOATTRIB, 0, IGameSpawnGroupMgr*);
 
 CS2Fixes g_CS2Fixes;
+IUtilsApi* g_pUtils;
+IPlayersApi* g_pPlayers;
+IMenusApi* g_pMenus;
 IGameEventSystem* g_gameEventSystem = nullptr;
 IGameEventManager2* g_gameEventManager = nullptr;
 CGameEntitySystem* g_pEntitySystem = nullptr;
