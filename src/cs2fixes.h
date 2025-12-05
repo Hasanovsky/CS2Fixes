@@ -116,12 +116,25 @@ public: // hooks
 	int Hook_LoadEventsFromFile(const char* filename, bool bSearchAll);
 	void Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr);
 
+private:
+	std::map<int, CS2FixesLoadedCallback> m_CS2FixesHook;
 public: // MetaMod API
 	void* OnMetamodQuery(const char* iface, int* ret);
 	std::uint64_t GetAdminFlags(std::uint64_t iSteam64ID) const override;
 	bool SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags) override;
 	int GetAdminImmunity(std::uint64_t iSteam64ID) const override;
 	bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) override;
+	void HookCS2FixesLoaded(SourceMM::PluginId id, CS2FixesLoadedCallback callback) {
+		m_CS2FixesHook[id] = callback;
+	}
+
+	void CallApplyBaseClassVisuals(CCSPlayerPawn* pPawn) {
+		for (auto& callback : m_CS2FixesHook) {
+			if (callback.second) {
+				callback.second(pPawn);
+			}
+		}
+	}
 
 public:
 	const char* GetAuthor() { return PLUGIN_AUTHOR; }
