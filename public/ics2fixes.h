@@ -23,6 +23,8 @@
 
 #define CS2FIXES_INTERFACE "CS2Fixes001"
 
+typedef std::function<void(CCSPlayerPawn* pPawn)> HookCS2FixesLoaded;
+
 class ICS2Fixes
 {
 public:
@@ -49,4 +51,7 @@ public:
 	// iImmunity's max value is INT_MAX and will be defaulted to INT_MAX if higher
 	// Returns false if unable to modify the admin (internal admin system is not set up yet)
 	virtual bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) = 0;
+
+	// Hook ApplyBaseClassVisuals
+	virtual void HookCS2FixesLoaded(SourceMM::PluginId id, CS2FixesLoadedCallback callback) = 0;
 };
