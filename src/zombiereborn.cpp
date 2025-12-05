@@ -39,6 +39,7 @@
 #include "utils/entity.h"
 #include "vendor/nlohmann/json.hpp"
 #include "zombiereborn.h"
+#include "cs2fixes.h"
 #include <fstream>
 #include <sstream>
 
