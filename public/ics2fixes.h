@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <ISmmPlugin.h>
 #include <functional>
+#include "src/cs2fixes.h"
 
 #define CS2FIXES_INTERFACE "CS2Fixes001"
 
