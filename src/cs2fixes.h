@@ -62,8 +62,6 @@ extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 extern void FullUpdateAllClients();
 extern CConVar<bool> g_cvarDropMapWeapons;
 
-typedef void (*CS2FixesLoadedCallback)(CCSPlayerPawn* pPawn);
-
 class CS2Fixes : public ISmmPlugin, public IMetamodListener, public ICS2Fixes
 {
 public:
@@ -118,6 +116,8 @@ public: // hooks
 	int Hook_LoadEventsFromFile(const char* filename, bool bSearchAll);
 	void Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr);
 
+private:
+	std::map<int, CS2FixesLoadedCallback> mHookCS2FixesLoaded;
 public: // MetaMod API
 	void* OnMetamodQuery(const char* iface, int* ret);
 	std::uint64_t GetAdminFlags(std::uint64_t iSteam64ID) const override;
@@ -132,8 +132,6 @@ public: // MetaMod API
 			it.second(pPawn);
 		}
 	}
-private:
-	std::map<int, CS2FixesLoadedCallback> mHookCS2FixesLoaded;
 
 public:
 	const char* GetAuthor() { return PLUGIN_AUTHOR; }
