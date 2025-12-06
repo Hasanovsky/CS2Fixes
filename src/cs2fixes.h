@@ -62,7 +62,7 @@ extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 extern void FullUpdateAllClients();
 extern CConVar<bool> g_cvarDropMapWeapons;
 
-class CS2Fixes : public ISmmPlugin, public IMetamodListener, public ICS2Fixes
+class CS2Fixes : public ISmmPlugin, public IMetamodListener
 {
 public:
 	bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late);
@@ -72,6 +72,7 @@ public:
 	bool Pause(char* error, size_t maxlen);
 	bool Unpause(char* error, size_t maxlen);
 	void AllPluginsLoaded();
+	void* OnMetamodQuery(const char* iface, int* ret);
 
 public: // hooks
 	void Hook_GameServerSteamAPIActivated();
@@ -116,9 +117,21 @@ public: // hooks
 	int Hook_LoadEventsFromFile(const char* filename, bool bSearchAll);
 	void Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr);
 
-public: // MetaMod API
+public:
+	const char* GetAuthor() { return PLUGIN_AUTHOR; }
+	const char* GetName() { return PLUGIN_DISPLAY_NAME; }
+	const char* GetDescription() { return PLUGIN_DESCRIPTION; }
+	const char* GetURL() { return PLUGIN_URL; }
+	const char* GetLicense() { return PLUGIN_LICENSE; }
+	const char* GetVersion() { return PLUGIN_FULL_VERSION; }
+	const char* GetDate() { return __DATE__; }
+	const char* GetLogTag() { return PLUGIN_LOGTAG; }
+};
+
+class CS2Fixes : public ICS2Fixes {
+private:
 	std::map<int, CS2FixesLoadedCallback> m_CS2FixesHook;
-	void* OnMetamodQuery(const char* iface, int* ret);
+public:
 	std::uint64_t GetAdminFlags(std::uint64_t iSteam64ID) const override;
 	bool SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags) override;
 	int GetAdminImmunity(std::uint64_t iSteam64ID) const override;
@@ -134,16 +147,6 @@ public: // MetaMod API
 			}
 		}
 	}
-
-public:
-	const char* GetAuthor() { return PLUGIN_AUTHOR; }
-	const char* GetName() { return PLUGIN_DISPLAY_NAME; }
-	const char* GetDescription() { return PLUGIN_DESCRIPTION; }
-	const char* GetURL() { return PLUGIN_URL; }
-	const char* GetLicense() { return PLUGIN_LICENSE; }
-	const char* GetVersion() { return PLUGIN_FULL_VERSION; }
-	const char* GetDate() { return __DATE__; }
-	const char* GetLogTag() { return PLUGIN_LOGTAG; }
 };
 
 extern CS2Fixes g_CS2Fixes;
