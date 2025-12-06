@@ -1,6 +1,7 @@
 [submodule "sdk"]
 	path = sdk
-	url = https://github.com/Vauff/hl2sdk/tree/update-igamesystem
+	url = https://github.com/Vauff/hl2sdk.git
+	branch = update-igamesystem
 [submodule "hl2sdk-manifests"]
 	path = hl2sdk-manifests
 	url = https://github.com/alliedmodders/hl2sdk-manifests
