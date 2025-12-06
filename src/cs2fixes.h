@@ -72,16 +72,6 @@ public:
 	bool Pause(char* error, size_t maxlen);
 	bool Unpause(char* error, size_t maxlen);
 	void AllPluginsLoaded();
-	void HookCS2FixesLoaded(SourceMM::PluginId id, HookCS2FixesLoaded callback) {
-		mHookCS2FixesLoaded[id] = callback;
-	}
-	void CallApplyBaseClassVisuals(CCSPlayerPawn* pPawn) {
-		for (auto& it : mHookCS2FixesLoaded) {
-			it.second(pPawn);
-		}
-	}
-private:
-	std::map<int, HookCS2FixesLoaded> mHookCS2FixesLoaded;
 
 public: // hooks
 	void Hook_GameServerSteamAPIActivated();
@@ -132,6 +122,16 @@ public: // MetaMod API
 	bool SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags) override;
 	int GetAdminImmunity(std::uint64_t iSteam64ID) const override;
 	bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) override;
+	void CS2Fixes::HookCS2FixesLoaded(SourceMM::PluginId id, HookCS2FixesLoaded callback) {
+		mHookCS2FixesLoaded[id] = callback;
+	}
+	void CallApplyBaseClassVisuals(CCSPlayerPawn* pPawn) {
+		for (auto& it : mHookCS2FixesLoaded) {
+			it.second(pPawn);
+		}
+	}
+private:
+	std::map<int, HookCS2FixesLoaded> mHookCS2FixesLoaded;
 
 public:
 	const char* GetAuthor() { return PLUGIN_AUTHOR; }
