@@ -510,7 +510,7 @@ void CZRPlayerClassManager::ApplyBaseClassVisuals(std::shared_ptr<ZRClass> pClas
 	// This has to be done a bit later
 	UTIL_AddEntityIOEvent(pPawn, "SetScale", nullptr, nullptr, pClass->flScale);
 
-	g_CS2Fixes->CallApplyBaseClassVisuals(pPawn);
+	// g_CS2Fixes->CallApplyBaseClassVisuals(pPawn);
 }
 
 std::shared_ptr<ZRHumanClass> CZRPlayerClassManager::GetHumanClass(const char* pszClassName)
