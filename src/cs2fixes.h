@@ -122,7 +122,7 @@ public: // MetaMod API
 	bool SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags) override;
 	int GetAdminImmunity(std::uint64_t iSteam64ID) const override;
 	bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) override;
-	void CS2Fixes::HookCS2FixesLoaded(SourceMM::PluginId id, HookCS2FixesLoaded callback) {
+	void HookCS2FixesLoaded(SourceMM::PluginId id, HookCS2FixesLoaded callback) {
 		mHookCS2FixesLoaded[id] = callback;
 	}
 	void CallApplyBaseClassVisuals(CCSPlayerPawn* pPawn) {
