@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <ISmmPlugin.h>
+#include <functional>
 
 #define CS2FIXES_INTERFACE "CS2Fixes001"
 
