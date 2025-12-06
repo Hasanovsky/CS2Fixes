@@ -62,6 +62,8 @@ extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 extern void FullUpdateAllClients();
 extern CConVar<bool> g_cvarDropMapWeapons;
 
+typedef void (*CS2FixesLoadedCallback)(CCSPlayerPawn*);
+
 class CS2Fixes : public ISmmPlugin, public IMetamodListener, public ICS2Fixes
 {
 public:
