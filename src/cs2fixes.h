@@ -116,8 +116,6 @@ public: // hooks
 	int Hook_LoadEventsFromFile(const char* filename, bool bSearchAll);
 	void Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr);
 
-private:
-	std::map<int, HookCS2FixesLoaded> mHookCS2FixesLoaded;
 public: // MetaMod API
 	void* OnMetamodQuery(const char* iface, int* ret);
 	std::uint64_t GetAdminFlags(std::uint64_t iSteam64ID) const override;
@@ -132,6 +130,8 @@ public: // MetaMod API
 			it.second(pPawn);
 		}
 	}
+private:
+	std::map<int, HookCS2FixesLoaded> mHookCS2FixesLoaded;
 
 public:
 	const char* GetAuthor() { return PLUGIN_AUTHOR; }
