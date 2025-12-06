@@ -20,6 +20,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ISmmPlugin.h>
 
 #define CS2FIXES_INTERFACE "CS2Fixes001"
 
