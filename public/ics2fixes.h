@@ -26,8 +26,6 @@
 
 #define CS2FIXES_INTERFACE "CS2Fixes001"
 
-typedef std::function<void(CCSPlayerPawn* pPawn)> HookCS2FixesLoaded;
-
 class ICS2Fixes
 {
 public:
@@ -56,5 +54,5 @@ public:
 	virtual bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) = 0;
 
 	// Hook ApplyBaseClassVisuals
-	virtual void HookCS2FixesLoaded(SourceMM::PluginId id, HookCS2FixesLoaded callback) = 0;
+	// virtual void HookCS2FixesLoaded(SourceMM::PluginId id, HookCS2FixesLoaded callback) = 0;
 };
