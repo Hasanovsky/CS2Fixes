@@ -1,4 +1,4 @@
-﻿/**
+/**
  * =============================================================================
  * CS2Fixes
  * Copyright (C) 2023-2025 Source2ZE
@@ -122,9 +122,6 @@ SH_DECL_MANUALHOOK2_void(PhysicsTouchShuffle, 0, 0, 0, CUtlVector<TouchLinked_t>
 SH_DECL_MANUALHOOK3_void(DropWeapon, 0, 0, 0, CBasePlayerWeapon*, Vector*, Vector*);
 SH_DECL_HOOK1_void(IServer, SetGameSpawnGroupMgr, SH_NOATTRIB, 0, IGameSpawnGroupMgr*);
 
-CS2FixesApi* g_pCS2FixesApi = nullptr;
-ICS2Fixes* g_pCS2FixesCore = nullptr;
-
 CS2Fixes g_CS2Fixes;
 IUtilsApi* g_pUtils;
 IPlayersApi* g_pPlayers;
@@ -195,9 +192,6 @@ bool CS2Fixes::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool
 
 	// Required to get the IMetamodListener events
 	g_SMAPI->AddListener(this, this);
-
-	g_pCS2FixesApi = new CS2FixesApi();
-	g_pCS2FixesCore = g_pCS2FixesApi;
 
 	Message("Starting plugin.\n");
 
@@ -1283,17 +1277,21 @@ void CS2Fixes::Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr)
 
 void* CS2Fixes::OnMetamodQuery(const char* iface, int* ret)
 {
-	if (!strcmp(iface, CS2FIXES_INTERFACE))
+	if (V_strcmp(iface, CS2FIXES_INTERFACE))
 	{
-		*ret = META_IFACE_OK;
-		return g_pCS2FixesCore;
+		if (ret)
+			*ret = META_IFACE_FAILED;
+
+		return nullptr;
 	}
 
-	*ret = META_IFACE_FAILED;
-	return nullptr;
+	if (ret)
+		*ret = META_IFACE_OK;
+
+	return static_cast<ICS2Fixes*>(&g_CS2Fixes);
 }
 
-std::uint64_t CS2FixesApi::GetAdminFlags(std::uint64_t iSteam64ID) const
+std::uint64_t CS2Fixes::GetAdminFlags(std::uint64_t iSteam64ID) const
 {
 	if (!g_pAdminSystem)
 		return 0;
@@ -1305,7 +1303,7 @@ std::uint64_t CS2FixesApi::GetAdminFlags(std::uint64_t iSteam64ID) const
 	return admin->GetFlags();
 }
 
-bool CS2FixesApi::SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags)
+bool CS2Fixes::SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags)
 {
 	if (!g_pAdminSystem)
 		return false;
@@ -1315,7 +1313,7 @@ bool CS2FixesApi::SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags)
 	return true;
 }
 
-int CS2FixesApi::GetAdminImmunity(std::uint64_t iSteam64ID) const
+int CS2Fixes::GetAdminImmunity(std::uint64_t iSteam64ID) const
 {
 	if (!g_pAdminSystem)
 		return 0;
@@ -1327,7 +1325,7 @@ int CS2FixesApi::GetAdminImmunity(std::uint64_t iSteam64ID) const
 	return admin->GetImmunity();
 }
 
-bool CS2FixesApi::SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity)
+bool CS2Fixes::SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity)
 {
 	if (!g_pAdminSystem)
 		return false;
