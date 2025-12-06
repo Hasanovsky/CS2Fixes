@@ -128,7 +128,7 @@ public:
 	const char* GetLogTag() { return PLUGIN_LOGTAG; }
 };
 
-class CS2Fixes : public ICS2Fixes {
+class CS2FixesApi : public ICS2Fixes {
 private:
 	std::map<int, CS2FixesLoadedCallback> m_CS2FixesHook;
 public:
