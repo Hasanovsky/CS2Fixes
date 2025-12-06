@@ -99,5 +99,7 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   binary.custom = [protoc_builder]
 
+  if cxx.target.arch == 'x86':
+    binary.sources += ['sourcehook/sourcehook_hookmangen.cpp']
   nodes = builder.Add(binary)
   MMSPlugin.binaries += [nodes]
