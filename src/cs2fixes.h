@@ -62,6 +62,8 @@ extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 extern void FullUpdateAllClients();
 extern CConVar<bool> g_cvarDropMapWeapons;
 
+typedef void (*CS2FixesLoadedCallback)(CCSPlayerPawn* pPawn);
+
 class CS2Fixes : public ISmmPlugin, public IMetamodListener, public ICS2Fixes
 {
 public:
@@ -125,9 +127,9 @@ public: // MetaMod API
 	void HookCS2FixesLoaded(SourceMM::PluginId id, CS2FixesLoadedCallback callback) override {
 		mHookCS2FixesLoaded[id] = callback;
 	}
-	void CallApplyBaseClassVisuals(int iSlot) {
+	void CallApplyBaseClassVisuals(CCSPlayerPawn* pPawn) {
 		for (auto& it : mHookCS2FixesLoaded) {
-			it.second(iSlot);
+			it.second(pPawn);
 		}
 	}
 private:
