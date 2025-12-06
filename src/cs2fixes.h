@@ -1,4 +1,4 @@
-﻿/**
+/**
  * =============================================================================
  * CS2Fixes
  * Copyright (C) 2023-2025 Source2ZE
@@ -62,7 +62,7 @@ extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 extern void FullUpdateAllClients();
 extern CConVar<bool> g_cvarDropMapWeapons;
 
-class CS2Fixes : public ISmmPlugin, public IMetamodListener
+class CS2Fixes : public ISmmPlugin, public IMetamodListener, public ICS2Fixes
 {
 public:
 	bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late);
@@ -72,7 +72,6 @@ public:
 	bool Pause(char* error, size_t maxlen);
 	bool Unpause(char* error, size_t maxlen);
 	void AllPluginsLoaded();
-	void* OnMetamodQuery(const char* iface, int* ret);
 
 public: // hooks
 	void Hook_GameServerSteamAPIActivated();
@@ -117,6 +116,13 @@ public: // hooks
 	int Hook_LoadEventsFromFile(const char* filename, bool bSearchAll);
 	void Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr);
 
+public: // MetaMod API
+	void* OnMetamodQuery(const char* iface, int* ret);
+	std::uint64_t GetAdminFlags(std::uint64_t iSteam64ID) const override;
+	bool SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags) override;
+	int GetAdminImmunity(std::uint64_t iSteam64ID) const override;
+	bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) override;
+
 public:
 	const char* GetAuthor() { return PLUGIN_AUTHOR; }
 	const char* GetName() { return PLUGIN_DISPLAY_NAME; }
@@ -126,27 +132,6 @@ public:
 	const char* GetVersion() { return PLUGIN_FULL_VERSION; }
 	const char* GetDate() { return __DATE__; }
 	const char* GetLogTag() { return PLUGIN_LOGTAG; }
-};
-
-class CS2FixesApi : public ICS2Fixes {
-private:
-	std::map<int, CS2FixesLoadedCallback> m_CS2FixesHook;
-public:
-	std::uint64_t GetAdminFlags(std::uint64_t iSteam64ID) const override;
-	bool SetAdminFlags(std::uint64_t iSteam64ID, std::uint64_t iFlags) override;
-	int GetAdminImmunity(std::uint64_t iSteam64ID) const override;
-	bool SetAdminImmunity(std::uint64_t iSteam64ID, std::uint32_t iImmunity) override;
-	void HookCS2FixesLoaded(SourceMM::PluginId id, CS2FixesLoadedCallback callback) {
-		m_CS2FixesHook[id] = callback;
-	}
-
-	void CallApplyBaseClassVisuals(CCSPlayerPawn* pPawn) {
-		for (auto& callback : m_CS2FixesHook) {
-			if (callback.second) {
-				callback.second(pPawn);
-			}
-		}
-	}
 };
 
 extern CS2Fixes g_CS2Fixes;
