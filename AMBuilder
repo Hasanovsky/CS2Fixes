@@ -49,6 +49,7 @@ for sdk_target in MMSPlugin.sdk_targets:
     'src/utils/entity.cpp',
     'src/utils/weapon.cpp',
     'src/utils/hud_manager.cpp',
+    'src/utils/utils.cpp',
     'src/cs2_sdk/entity/services.cpp',
     'src/cs2_sdk/entity/ccsplayerpawn.cpp',
     'src/cs2_sdk/entity/cbasemodelentity.cpp',
@@ -69,7 +70,9 @@ for sdk_target in MMSPlugin.sdk_targets:
     'src/entitylistener.cpp',
     'src/leader.cpp',
     'src/buttonwatch.cpp',
+    'src/topdefender.cpp',
     'src/idlemanager.cpp',
+    'src/mapmigrations.cpp',
     'sdk/entity2/entitysystem.cpp',
     'sdk/entity2/entityidentity.cpp',
     'sdk/entity2/entitykeyvalues.cpp',
@@ -78,6 +81,7 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   protoc_builder = builder.tools.Protoc(protoc = sdk_target.protoc, sources = [
     os.path.join(sdk['path'], 'common', 'network_connection.proto'),
+    os.path.join(sdk['path'], 'common', 'source2_steam_stats.proto'),
     os.path.join(sdk['path'], 'common', 'netmessages.proto'),
     os.path.join(sdk['path'], 'common', 'networkbasetypes.proto'),
     os.path.join(sdk['path'], 'common', 'engine_gcmessages.proto'),

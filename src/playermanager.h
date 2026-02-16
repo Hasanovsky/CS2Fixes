@@ -1,7 +1,7 @@
 /**
  * =============================================================================
  * CS2Fixes
- * Copyright (C) 2023-2025 Source2ZE
+ * Copyright (C) 2023-2026 Source2ZE
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -165,6 +165,7 @@ public:
 		m_bConnected = false;
 		m_iTotalDamage = 0;
 		m_iTotalHits = 0;
+		m_iTotalHeadshots = 0;
 		m_iTotalKills = 0;
 		m_bVotedRTV = false;
 		m_bVotedExtend = false;
@@ -192,11 +193,11 @@ public:
 		m_pActiveZRModel = nullptr;
 		m_iButtonWatchMode = 0;
 		m_iEntwatchHudMode = 0;
-		m_bEntwatchClantags = true;
 		m_colorEntwatchHud = Color(255, 255, 255, 255);
 		m_flEntwatchHudX = -7.5f;
 		m_flEntwatchHudY = -2.0f;
 		m_flEntwatchHudSize = 60.0f;
+		m_bTopDefender = false;
 	}
 
 	~ZEPlayer()
@@ -231,6 +232,7 @@ public:
 	void SetHideDistance(int distance);
 	void SetTotalDamage(int damage) { m_iTotalDamage = damage; }
 	void SetTotalHits(int hits) { m_iTotalHits = hits; }
+	void SetTotalHeadshots(int headshots) { m_iTotalHeadshots = headshots; }
 	void SetTotalKills(int kills) { m_iTotalKills = kills; }
 	void SetRTVVote(bool bRTVVote) { m_bVotedRTV = bRTVVote; }
 	void SetRTVVoteTime(float flCurtime) { m_flRTVVoteTime = flCurtime; }
@@ -261,12 +263,12 @@ public:
 	void SetActiveZRClass(std::shared_ptr<ZRClass> pZRModel) { m_pActiveZRClass = pZRModel; }
 	void SetActiveZRModel(std::shared_ptr<ZRModelEntry> pZRClass) { m_pActiveZRModel = pZRClass; }
 	void SetEntwatchHudMode(int iMode);
-	void SetEntwatchClangtags(bool bStatus);
 	void SetPointOrient(CPointOrient* pOrient) { m_hPointOrient.Set(pOrient); }
 	void SetEntwatchHud(CPointWorldText* pWorldText) { m_hEntwatchHud.Set(pWorldText); }
 	void SetEntwatchHudColor(Color colorHud);
 	void SetEntwatchHudPos(float x, float y);
 	void SetEntwatchHudSize(float flSize);
+	void SetTopDefenderStatus(bool bStatus) { m_bTopDefender = bStatus; }
 
 	uint64 GetAdminFlags() { return m_iAdminFlags; }
 	int GetAdminImmunity() { return m_iAdminImmunity; }
@@ -278,6 +280,7 @@ public:
 	CPlayerSlot GetPlayerSlot() { return m_slot; }
 	int GetTotalDamage() { return m_iTotalDamage; }
 	int GetTotalHits() { return m_iTotalHits; }
+	int GetTotalHeadshots() { return m_iTotalHeadshots; }
 	int GetTotalKills() { return m_iTotalKills; }
 	bool GetRTVVote() { return m_bVotedRTV; }
 	float GetRTVVoteTime() { return m_flRTVVoteTime; }
@@ -309,13 +312,13 @@ public:
 	std::shared_ptr<ZRModelEntry> GetActiveZRModel() { return m_pActiveZRModel; }
 	int GetButtonWatchMode();
 	int GetEntwatchHudMode();
-	bool GetEntwatchClangtags() { return m_bEntwatchClantags; }
 	CPointOrient* GetPointOrient() { return m_hPointOrient.Get(); }
 	CPointWorldText* GetEntwatchHud() { return m_hEntwatchHud.Get(); }
 	Color GetEntwatchHudColor() { return m_colorEntwatchHud; }
 	float GetEntwatchHudX() { return m_flEntwatchHudX; }
 	float GetEntwatchHudY() { return m_flEntwatchHudY; }
 	float GetEntwatchHudSize() { return m_flEntwatchHudSize; }
+	bool GetTopDefenderStatus() { return m_bTopDefender; }
 
 	void OnSpawn();
 	void OnAuthenticated();
@@ -349,6 +352,7 @@ private:
 	CBitVec<MAXPLAYERS> m_shouldTransmit;
 	int m_iTotalDamage;
 	int m_iTotalHits;
+	int m_iTotalHeadshots;
 	int m_iTotalKills;
 	bool m_bVotedRTV;
 	float m_flRTVVoteTime;
@@ -384,11 +388,11 @@ private:
 	CHandle<CPointOrient> m_hPointOrient;
 	CHandle<CPointWorldText> m_hEntwatchHud;
 	int m_iEntwatchHudMode;
-	bool m_bEntwatchClantags;
 	Color m_colorEntwatchHud;
 	float m_flEntwatchHudX;
 	float m_flEntwatchHudY;
 	float m_flEntwatchHudSize;
+	bool m_bTopDefender;
 };
 
 class CPlayerManager
@@ -399,7 +403,7 @@ public:
 		V_memset(m_vecPlayers, 0, sizeof(m_vecPlayers));
 		m_nUsingStopSound = -1; // On by default
 		m_nUsingSilenceSound = 0;
-		m_nUsingZSounds = -1; // On by default
+		m_nUsingZSounds = -1;	 // On by default
 		m_nUsingStopDecals = -1; // On by default
 		m_nUsingNoShake = 0;
 	}
@@ -447,6 +451,7 @@ public:
 
 	void UpdatePlayerStates();
 	int GetOnlinePlayerCount(bool bCountBots);
+	void FullUpdateAllClients();
 
 	STEAM_GAMESERVER_CALLBACK_MANUAL(CPlayerManager, OnValidateAuthTicket, ValidateAuthTicketResponse_t, m_CallbackValidateAuthTicketResponse);
 

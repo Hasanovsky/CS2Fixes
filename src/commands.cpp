@@ -1,7 +1,7 @@
 /**
  * =============================================================================
  * CS2Fixes
- * Copyright (C) 2023-2025 Source2ZE
+ * Copyright (C) 2023-2026 Source2ZE
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -742,6 +742,12 @@ CON_COMMAND_CHAT(showteam, "<name> - Get a player's current team")
 		default:
 			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "%s is not on a team.", pTarget->GetPlayerName());
 	}
+}
+
+// Because sv_fullupdate doesn't work
+CON_COMMAND_F(cs2f_fullupdate, "- Force a full update for all clients.", FCVAR_LINKED_CONCOMMAND | FCVAR_SPONLY)
+{
+	g_playerManager->FullUpdateAllClients();
 }
 
 #if _DEBUG

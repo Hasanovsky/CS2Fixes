@@ -17,13 +17,20 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cbasemodelentity.h"
-#include "ccsplayerpawn.h"
+#pragma once
 
-void CBaseModelEntity::SetModel(const char* szModel)
-{
-	addresses::CBaseModelEntity_SetModel(this, szModel);
+#include "commands.h"
 
-	if (IsPawn())
-		((CCSPlayerPawn*)this)->FixPlayerModelAnimations();
-}
+#define TD_PREFIX " \4[TopDefender]\1 "
+
+extern CConVar<bool> g_cvarEnableTopDefender;
+extern CConVar<CUtlString> g_cvarTopDefenderChatTag;
+extern CConVar<CUtlString> g_cvarTopDefenderNameColor;
+extern CConVar<CUtlString> g_cvarTopDefenderChatColor;
+
+void TD_OnPlayerHurt(IGameEvent* pEvent);
+void TD_OnPlayerDeath(IGameEvent* pEvent);
+void TD_OnRoundStart(IGameEvent* pEvent);
+void TD_OnRoundEnd(IGameEvent* pEvent);
+
+void TopDefenderSearch(CCSPlayerController* player, const CCommand& args);

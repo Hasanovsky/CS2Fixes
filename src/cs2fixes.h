@@ -1,7 +1,7 @@
 /**
  * =============================================================================
  * CS2Fixes
- * Copyright (C) 2023-2025 Source2ZE
+ * Copyright (C) 2023-2026 Source2ZE
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -51,16 +51,11 @@ extern IGameEventSystem* g_gameEventSystem;
 extern IGameEventManager2* g_gameEventManager;
 extern CGameEntitySystem* g_pEntitySystem;
 extern IVEngineServer2* g_pEngineServer2;
-extern ISteamHTTP* g_http;
-extern CSteamGameServerAPIContext g_steamAPI;
 extern CCSGameRules* g_pGameRules;
 extern CSpawnGroupMgrGameSystem* g_pSpawnGroupMgr;
 extern double g_flUniversalTime;
+extern INetworkGameServer* GetNetworkGameServer();
 extern CGlobalVars* GetGlobals();
-extern uint32 GetSoundEventHash(const char* pszSoundEventName);
-extern CUtlVector<CServerSideClient*>* GetClientList();
-extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
-extern void FullUpdateAllClients();
 extern CConVar<bool> g_cvarDropMapWeapons;
 
 class CS2Fixes : public ISmmPlugin, public IMetamodListener, public ICS2Fixes
@@ -76,7 +71,6 @@ public:
 
 public: // hooks
 	void Hook_GameServerSteamAPIActivated();
-	void Hook_GameServerSteamAPIDeactivated();
 	void OnLevelInit(char const* pMapName,
 					 char const* pMapEntities,
 					 char const* pOldLevel,
@@ -116,6 +110,7 @@ public: // hooks
 	void Hook_DropWeaponPost(CBasePlayerWeapon* pWeapon, Vector* pVecTarget, Vector* pVelocity);
 	int Hook_LoadEventsFromFile(const char* filename, bool bSearchAll);
 	void Hook_SetGameSpawnGroupMgr(IGameSpawnGroupMgr* pSpawnGroupMgr);
+	void Hook_SpawnPost(int nCount, const EntitySpawnInfo_t* pInfo);
 
 public: // MetaMod API
 	void* OnMetamodQuery(const char* iface, int* ret);

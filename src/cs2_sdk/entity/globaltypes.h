@@ -1,7 +1,7 @@
 ﻿/**
  * =============================================================================
  * CS2Fixes
- * Copyright (C) 2023-2025 Source2ZE
+ * Copyright (C) 2023-2026 Source2ZE
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -152,9 +152,9 @@ struct EmitSound_t
 	{
 	}
 	const char* m_pSoundName; // 0x0
-	Vector m_vecSoundOrigin; // 0x8
-	float m_flVolume;		 // 0x14
-	float m_flSoundTime;	 // 0x18
+	Vector m_vecSoundOrigin;  // 0x8
+	float m_flVolume;		  // 0x14
+	float m_flSoundTime;	  // 0x18
 private:
 	uint8_t pad_1c[0x4];
 

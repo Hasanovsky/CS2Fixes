@@ -1,7 +1,7 @@
 ﻿/**
  * =============================================================================
  * CS2Fixes
- * Copyright (C) 2023-2025 Source2ZE
+ * Copyright (C) 2023-2026 Source2ZE
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -23,8 +23,8 @@
 #include "entity/ccsplayercontroller.h"
 #include "entity/ccsplayerpawn.h"
 #include "eventlistener.h"
-#include "gamesystem.h"
 #include "gameevents.pb.h"
+#include "gamesystem.h"
 #include "vendor/nlohmann/json_fwd.hpp"
 
 using ordered_json = nlohmann::ordered_json;

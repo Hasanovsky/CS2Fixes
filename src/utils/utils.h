@@ -17,13 +17,23 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cbasemodelentity.h"
-#include "ccsplayerpawn.h"
+#pragma once
 
-void CBaseModelEntity::SetModel(const char* szModel)
-{
-	addresses::CBaseModelEntity_SetModel(this, szModel);
+#include "playerslot.h"
+#include "steam/isteamugc.h"
+#include "utlvector.h"
+#include <string>
 
-	if (IsPawn())
-		((CCSPlayerPawn*)this)->FixPlayerModelAnimations();
-}
+class CServerSideClient;
+
+void Message(const char*, ...);
+void Panic(const char*, ...);
+
+CUtlVector<CServerSideClient*>* GetClientList();
+CServerSideClient* GetClientBySlot(CPlayerSlot slot);
+
+uint32 GetSoundEventHash(const char* pszSoundEventName);
+std::string StringToLower(std::string strValue);
+
+ISteamUGC* GetSteamUGC();
+ISteamHTTP* GetSteamHTTP();

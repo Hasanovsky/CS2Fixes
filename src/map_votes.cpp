@@ -1,7 +1,7 @@
 /**
  * =============================================================================
  * CS2Fixes
- * Copyright (C) 2023-2025 Source2ZE
+ * Copyright (C) 2023-2026 Source2ZE
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,6 +41,7 @@
 CMapVoteSystem* g_pMapVoteSystem = nullptr;
 
 CConVar<float> g_cvarVoteMapsCooldown("cs2f_vote_maps_cooldown", FCVAR_NONE, "Default number of hours until a map can be played again i.e. cooldown", 6.0f);
+CConVar<float> g_cvarVoteMapsCooldownRng("cs2f_vote_maps_cooldown_rng", FCVAR_NONE, "Randomness range in both directions to apply to map cooldowns", 0.0f);
 CConVar<int> g_cvarVoteMaxNominations("cs2f_vote_max_nominations", FCVAR_NONE, "Number of nominations to include per vote, out of a maximum of 10", 10, true, 0, true, 10);
 CConVar<int> g_cvarVoteMaxMaps("cs2f_vote_max_maps", FCVAR_NONE, "Number of total maps to include per vote, including nominations, out of a maximum of 10", 10, true, 2, true, 10);
 
@@ -616,7 +617,7 @@ std::vector<std::shared_ptr<CMap>> CMapVoteSystem::GetMapsFromSubstring(const ch
 
 void CMapVoteSystem::HandlePlayerMapLookup(CCSPlayerController* pController, std::string strMapSubstring, bool bAdmin, QueryCallback_t callbackSuccess)
 {
-	strMapSubstring = g_pMapVoteSystem->StringToLower(strMapSubstring);
+	strMapSubstring = StringToLower(strMapSubstring);
 	const char* pszMapSubstring = strMapSubstring.c_str();
 	auto vecFoundMaps = GetMapsFromSubstring(pszMapSubstring);
 
@@ -669,7 +670,7 @@ void CMapVoteSystem::HandlePlayerMapLookup(CCSPlayerController* pController, std
 		// Check if input is numeric (workshop ID)
 		if (iWorkshopId != 0)
 		{
-			CWorkshopDetailsQuery::Create(iWorkshopId, pController, callbackSuccess);
+			CMapSystemWorkshopDetailsQuery::Create(iWorkshopId, pController, callbackSuccess);
 			return;
 		}
 
@@ -925,13 +926,13 @@ void CMapVoteSystem::ForceNextMap(CCSPlayerController* pController, const char* 
 
 void CMapVoteSystem::PrintDownloadProgress()
 {
-	if (GetDownloadQueueSize() == 0)
+	if (GetDownloadQueueSize() == 0 || !GetSteamUGC())
 		return;
 
 	uint64 iBytesDownloaded = 0;
 	uint64 iTotalBytes = 0;
 
-	if (!g_steamAPI.SteamUGC()->GetItemDownloadInfo(m_DownloadQueue.front(), &iBytesDownloaded, &iTotalBytes) || !iTotalBytes)
+	if (!GetSteamUGC()->GetItemDownloadInfo(m_DownloadQueue.front(), &iBytesDownloaded, &iTotalBytes) || !iTotalBytes)
 		return;
 
 	double flMBDownloaded = (double)iBytesDownloaded / 1024 / 1024;
@@ -945,7 +946,7 @@ void CMapVoteSystem::PrintDownloadProgress()
 
 void CMapVoteSystem::OnMapDownloaded(DownloadItemResult_t* pResult)
 {
-	if (std::find(m_DownloadQueue.begin(), m_DownloadQueue.end(), pResult->m_nPublishedFileId) == m_DownloadQueue.end())
+	if (std::find(m_DownloadQueue.begin(), m_DownloadQueue.end(), pResult->m_nPublishedFileId) == m_DownloadQueue.end() || !GetSteamUGC())
 		return;
 
 	// Some weird rate limiting that's been observed? Back off for a while then retry download
@@ -955,7 +956,7 @@ void CMapVoteSystem::OnMapDownloaded(DownloadItemResult_t* pResult)
 		Message("Addon %llu download failed with status code 3, retrying in 2 minutes\n", workshopID);
 
 		m_pRateLimitedDownloadTimer = CTimer::Create(120.0f, TIMERFLAG_NONE, [workshopID]() {
-			g_steamAPI.SteamUGC()->DownloadItem(workshopID, false);
+			GetSteamUGC()->DownloadItem(workshopID, false);
 
 			return -1.0f;
 		});
@@ -968,7 +969,7 @@ void CMapVoteSystem::OnMapDownloaded(DownloadItemResult_t* pResult)
 	if (GetDownloadQueueSize() == 0)
 		return;
 
-	g_steamAPI.SteamUGC()->DownloadItem(m_DownloadQueue.front(), false);
+	GetSteamUGC()->DownloadItem(m_DownloadQueue.front(), false);
 }
 
 void CMapVoteSystem::QueueMapDownload(PublishedFileId_t iWorkshopId)
@@ -979,7 +980,7 @@ void CMapVoteSystem::QueueMapDownload(PublishedFileId_t iWorkshopId)
 	m_DownloadQueue.push_back(iWorkshopId);
 
 	if (m_DownloadQueue.front() == iWorkshopId)
-		g_steamAPI.SteamUGC()->DownloadItem(iWorkshopId, false);
+		GetSteamUGC()->DownloadItem(iWorkshopId, false);
 }
 
 bool CMapVoteSystem::LoadMapList()
@@ -1277,14 +1278,6 @@ std::string CMapVoteSystem::ConvertFloatToString(float fValue, int precision)
 	return str;
 }
 
-std::string CMapVoteSystem::StringToLower(std::string strValue)
-{
-	for (int i = 0; strValue[i]; i++)
-		strValue[i] = tolower(strValue[i]);
-
-	return strValue;
-}
-
 std::string CMapVoteSystem::GetMapCooldownText(const char* pszMapName, bool bPlural)
 {
 	std::shared_ptr<CCooldown> pCooldown = GetMapCooldown(pszMapName);
@@ -1335,6 +1328,17 @@ void CMapVoteSystem::PutMapOnCooldown(const char* pszMapName, float fCooldown)
 			fCooldown = pMap->GetCustomCooldown();
 		else
 			fCooldown = g_cvarVoteMapsCooldown.Get();
+
+		// Add randomness if applicable
+		if (g_cvarVoteMapsCooldown.Get() != 0.0f)
+		{
+			float flRandomValue = ((float)rand() / RAND_MAX) * g_cvarVoteMapsCooldownRng.Get();
+
+			if (rand() % 2)
+				fCooldown += flRandomValue;
+			else
+				fCooldown -= flRandomValue;
+		}
 	}
 
 	time_t timeCooldown = std::time(0) + (time_t)(fCooldown * 60 * 60);
@@ -1447,10 +1451,17 @@ std::pair<int, std::shared_ptr<CMap>> CMapVoteSystem::GetMapInfoByIdentifiers(co
 	return {-1, nullptr};
 }
 
-std::shared_ptr<CWorkshopDetailsQuery> CWorkshopDetailsQuery::Create(uint64 iWorkshopId, CCSPlayerController* pController, QueryCallback_t callbackSuccess)
+std::shared_ptr<CMapSystemWorkshopDetailsQuery> CMapSystemWorkshopDetailsQuery::Create(uint64 iWorkshopId, CCSPlayerController* pController, QueryCallback_t callbackSuccess)
 {
+	if (!GetSteamUGC())
+	{
+		Panic("A workshop map query was attempted on null ISteamUGC, returning early.\n");
+		ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "Failed to query workshop map information for ID \x06%llu\x01.", iWorkshopId);
+		return nullptr;
+	}
+
 	uint64 iWorkshopIDArray[1] = {iWorkshopId};
-	UGCQueryHandle_t hQuery = g_steamAPI.SteamUGC()->CreateQueryUGCDetailsRequest(iWorkshopIDArray, 1);
+	UGCQueryHandle_t hQuery = GetSteamUGC()->CreateQueryUGCDetailsRequest(iWorkshopIDArray, 1);
 
 	if (hQuery == k_UGCQueryHandleInvalid)
 	{
@@ -1458,17 +1469,17 @@ std::shared_ptr<CWorkshopDetailsQuery> CWorkshopDetailsQuery::Create(uint64 iWor
 		return nullptr;
 	}
 
-	g_steamAPI.SteamUGC()->SetAllowCachedResponse(hQuery, 0);
-	SteamAPICall_t hCall = g_steamAPI.SteamUGC()->SendQueryUGCRequest(hQuery);
+	GetSteamUGC()->SetAllowCachedResponse(hQuery, 0);
+	SteamAPICall_t hCall = GetSteamUGC()->SendQueryUGCRequest(hQuery);
 
-	auto pQuery = std::make_shared<CWorkshopDetailsQuery>(hQuery, iWorkshopId, pController, callbackSuccess);
+	auto pQuery = std::make_shared<CMapSystemWorkshopDetailsQuery>(hQuery, iWorkshopId, pController, callbackSuccess);
 	g_pMapVoteSystem->AddWorkshopDetailsQuery(pQuery);
-	pQuery->m_CallResult.Set(hCall, pQuery.get(), &CWorkshopDetailsQuery::OnQueryCompleted);
+	pQuery->m_CallResult.Set(hCall, pQuery.get(), &CMapSystemWorkshopDetailsQuery::OnQueryCompleted);
 
 	return pQuery;
 }
 
-void CWorkshopDetailsQuery::OnQueryCompleted(SteamUGCQueryCompleted_t* pCompletedQuery, bool bFailed)
+void CMapSystemWorkshopDetailsQuery::OnQueryCompleted(SteamUGCQueryCompleted_t* pCompletedQuery, bool bFailed)
 {
 	CCSPlayerController* pController = m_hController.Get();
 	SteamUGCDetails_t details;
@@ -1476,7 +1487,7 @@ void CWorkshopDetailsQuery::OnQueryCompleted(SteamUGCQueryCompleted_t* pComplete
 	// Only allow null controller if controller was originally null (console)
 	if (m_bConsole || pController)
 	{
-		if (bFailed || pCompletedQuery->m_eResult != k_EResultOK || pCompletedQuery->m_unNumResultsReturned < 1 || !g_steamAPI.SteamUGC()->GetQueryUGCResult(pCompletedQuery->m_handle, 0, &details) || details.m_eResult != k_EResultOK)
+		if (bFailed || pCompletedQuery->m_eResult != k_EResultOK || pCompletedQuery->m_unNumResultsReturned < 1 || !GetSteamUGC()->GetQueryUGCResult(pCompletedQuery->m_handle, 0, &details) || details.m_eResult != k_EResultOK)
 		{
 			ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX "Failed to query workshop map information for ID \x06%llu\x01.", m_iWorkshopId);
 		}
@@ -1487,12 +1498,14 @@ void CWorkshopDetailsQuery::OnQueryCompleted(SteamUGCQueryCompleted_t* pComplete
 		else
 		{
 			// Try to get a head start on downloading the map if needed
-			g_steamAPI.SteamUGC()->DownloadItem(m_iWorkshopId, false);
+			GetSteamUGC()->DownloadItem(m_iWorkshopId, false);
 			m_callbackSuccess(std::make_shared<CMap>(details.m_rgchTitle, m_iWorkshopId), pController);
 		}
 	}
 
-	g_steamAPI.SteamUGC()->ReleaseQueryUGCRequest(m_hQuery);
+	if (GetSteamUGC())
+		GetSteamUGC()->ReleaseQueryUGCRequest(m_hQuery);
+
 	g_pMapVoteSystem->RemoveWorkshopDetailsQuery(shared_from_this());
 }
 
